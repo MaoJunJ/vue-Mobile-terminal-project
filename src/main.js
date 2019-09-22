@@ -9,6 +9,8 @@ Vue.use(Vant);
 
 import 'amfe-flexible'
 
+import './styles/base.less'
+
 
 Vue.config.productionTip = false
 
