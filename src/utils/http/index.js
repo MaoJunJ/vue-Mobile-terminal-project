@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getUser } from '../storage/'
 
 // 以后项目大的话，可能要发几十几百条接口的请求
 // 有的做登录，有的做数据请求，删除，等等各种数据
@@ -25,15 +26,23 @@ import axios from 'axios'
 
 // axiosB.get('') //通过axiosB发的请求基地址都是b.com
 
-
+// 只是用来放一些发请求的对象工具，再暴露出去
 export const http = axios.create({
 
-    baseURL:"http://ttapi.research.itcast.cn/"
+    baseURL: "http://ttapi.research.itcast.cn/"
 })
 
 
-export const login = (data) => {
+// 添加请求拦截器
+http.interceptors.request.use(function (config) {
+    
+    if(getUser()){
 
-    // 把这个promise返回出去了
-    return http.post('/app/v1_0/authorizations',data)
-}
+        config.headers.Authorization = `Bearer ${getUser().token}`
+    }
+
+    return config;
+}, function (error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+});

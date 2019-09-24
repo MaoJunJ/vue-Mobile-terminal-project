@@ -23,7 +23,7 @@
         />
       </van-cell-group>
 
-      <van-button type="info" class="login-btn" @click.prevent="login">信息按钮</van-button>
+      <van-button type="info" class="login-btn" @click.prevent="doLogin">登录</van-button>
     </form>
   </van-cell-group>
 </template>
@@ -35,7 +35,10 @@
 
 // import { http } from '../../utils/http/'
 
-import { login } from '../../utils/http/'
+// 导入抽取出来的做登录的请求模块
+import { login } from '../../api/login.js'
+// 导入存储模块
+import { setUser } from '../../utils/storage/'
 
 
 export default {
@@ -52,7 +55,7 @@ export default {
 
   methods: {
 
-    async login() {
+    async doLogin() {
 
       // 验证所有是不是符合规则
       if (!/0?(13|14|15|18|17)[0-9]{9}/.test(this.form.mobile)) {
@@ -73,8 +76,25 @@ export default {
         // );
 
         // console.log(res);
-        let res = await login(this.form)
-        console.log(res);
+
+        try{
+
+            // 使用封装的axios发请求
+            let res = await login(this.form)
+            // console.log(res);
+            // 如果登录成功要保存token
+            // window.localStorage.setItem('userInfo',JSON.stringify(res.data.data))
+            setUser(res.data.data);
+            // 再跳转页面
+            this.$router.push('/home')
+
+        }catch{
+
+            // 登录失败弹出提示
+            this.$toast.fail('手机号或验证码错误');
+            console.log(this);
+            
+        }
         
       }
     }
@@ -85,6 +105,7 @@ export default {
 <style lang="less" scoped>
 .form-wrap {
   padding: 20px;
+  margin-top:46px;
 
   .login-btn {
     margin-top: 20px;
