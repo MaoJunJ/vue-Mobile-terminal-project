@@ -2,7 +2,8 @@
   <div class="home">
     <van-nav-bar title="首页" />
 
-    <van-tabs v-model="tabActive">
+    <van-tabs v-model="tabActive" @change="onTabChange">
+      
       <van-tab v-for="item in channelList" :title="item.name">
 
       <van-pull-refresh v-model="pullLoading" @refresh="onRefresh">
@@ -30,6 +31,7 @@ import { getChannel } from '@/api/channel.js'
 import { getArticleByTime } from '@/api/article.js'
 
 export default {
+  name:"home",
   data() {
     return {
       // 设置下拉的加载状态，默认为false
@@ -46,16 +48,38 @@ export default {
 
   methods: {
 
-    // 只要下拉了，会触发这个事件
-    // 触发这个事件会自动把它绑定加载状态改成true
-    async onRefresh(){
+    async onTabChange(name,title){
+
+      // 要去加载你这一个频道下面的新闻，然后渲染到列表
+      let res = await this.loadArticle()
+      // console.log(res);
+      this.articlList = res.data.data.results;
+    },
+
+    // 封装的加载文章数据的方法
+    async loadArticle(){
 
        // 以当前时间去发个请求
-       let channel_id = this.tabActive;
+       let channel_id = this.channelList[this.tabActive].id;
+       
        let timestamp = Date.now();
        let with_top = 1;
 
        let res = await getArticleByTime( { channel_id, timestamp, with_top } )
+       if(res.data.data.results.length == 0){
+         this.finished = true;
+       }
+       return res;
+    },
+
+    // 只要下拉了，会触发这个事件
+    // 触发这个事件会自动把它绑定加载状态改成true
+    async onRefresh(){
+
+       //因为loadArticle里面用了await，所以这里也要用await，要等它里面的先执行完了
+       //我才往下面赋值，如果不加await，代表函数里面异步还没执行，我就开始往下赋值了
+       let res = await this.loadArticle();
+      //  console.log(res);
        this.articlList.unshift(...res.data.data.results)
        this.pullLoading = false;
       
@@ -66,14 +90,7 @@ export default {
     // 本质上是：如果格子还没铺满就会调用这个事件
     async onLoad() {
       
-      // 拿到当前的频道id
-      let channel_id =  this.tabActive;
-      let timestamp = Date.now();
-      let with_top = 1;
-      
-
-      //发请求获取当前频道的新闻列表
-      let res = await getArticleByTime( { channel_id,timestamp,with_top } )
+      let res = await this.loadArticle()
       // 这里要用push，要把数组展开后再push
       this.articlList.push(...res.data.data.results);
       this.loading = false;
