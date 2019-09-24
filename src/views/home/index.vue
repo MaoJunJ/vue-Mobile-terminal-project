@@ -4,10 +4,14 @@
 
     <van-tabs v-model="tabActive">
       <van-tab v-for="item in channelList" :title="item.name">
+
+      <van-pull-refresh v-model="pullLoading" @refresh="onRefresh">
         <!-- 列表 -->
         <van-list v-model="loading" :finished="finished" finished-text="我是有底线的！" @load="onLoad">
-          <van-cell v-for="item in list" :key="item" :title="item" />
+          <van-cell v-for="(item,index) in articlList" :key="index" :title="item.title" />
         </van-list>
+      </van-pull-refresh>
+
       </van-tab>
 
       <!-- 右边要一个图标，但是用van-tab是无法实现的 -->
@@ -22,44 +26,65 @@
 <script>
 
 // 导入请求工具
-import { getChannel } from '@/api/channel'
+import { getChannel } from '@/api/channel.js'
+import { getArticleByTime } from '@/api/article.js'
 
 export default {
   data() {
     return {
+      // 设置下拉的加载状态，默认为false
+      pullLoading:false,
       // 跟tabs绑定的下标，现在默认让下标0的tab激活
       tabActive: 0,
       loading: false,
       finished: false,
-      list: [],
+      articlList: [],
       //频道数据
       channelList:[]
     };
   },
 
   methods: {
+
+    // 只要下拉了，会触发这个事件
+    // 触发这个事件会自动把它绑定加载状态改成true
+    async onRefresh(){
+
+       // 以当前时间去发个请求
+       let channel_id = this.tabActive;
+       let timestamp = Date.now();
+       let with_top = 1;
+
+       let res = await getArticleByTime( { channel_id, timestamp, with_top } )
+       this.articlList.unshift(...res.data.data.results)
+       this.pullLoading = false;
+      
+    },
+    
     // 需要加载数据的事件
     // 什么时候需要加载数据？
     // 本质上是：如果格子还没铺满就会调用这个事件
-    onLoad() {
-      // 这个方法一旦调用，会自动先把loading改成true
+    async onLoad() {
+      
+      // 拿到当前的频道id
+      let channel_id =  this.tabActive;
+      let timestamp = Date.now();
+      let with_top = 1;
+      
 
-      // console.log('123');
+      //发请求获取当前频道的新闻列表
+      let res = await getArticleByTime( { channel_id,timestamp,with_top } )
+      // 这里要用push，要把数组展开后再push
+      this.articlList.push(...res.data.data.results);
+      this.loading = false;
 
-      //   // 异步更新数据
-      setTimeout(() => {
-        for (let i = 0; i < 20; i++) {
-          this.list.push(this.list.length + 1);
-        }
-        // 加载状态结束
-        // 如果数据回来了，记得把加载动画要改为false
-        this.loading = false;
+      // 任何数据可能很多，但最终也会到一个底线，这个底线我们可以自己设置
+      // 如果需要设置底线，把这个代码加上，只想无限刷就把它去掉
+      // if( this.articlList.length >= 400 ){
+        
+      //   this.finished = true;
+      // }
 
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true;
-        }
-      }, 2500);
     }
   },
 
