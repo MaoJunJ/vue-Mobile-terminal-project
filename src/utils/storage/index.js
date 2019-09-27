@@ -22,15 +22,14 @@ export const delUser = () => {
 }
 
 
-export const getChannel = () => {
+// 获取频道信息
+export const getChannel = () =>{
 
-   
-    return JSON.parse(window.localStorage.getItem('channel'))
+    return JSON.parse(localStorage.getItem('channel'))
 }
 
-
+// 保存频道信息
 export const setChannel = (list) => {
 
-   
-    window.localStorage.setItem('channel', JSON.stringify(list) )
+    window.localStorage.setItem('channel',JSON.stringify(list))
 }

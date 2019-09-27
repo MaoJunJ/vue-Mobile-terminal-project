@@ -51,7 +51,7 @@
 
 <script>
 import { getAllChannel, changeChannel } from "@/api/channel.js";
-import { getUser, setChannel } from "@/utils/storage/index.js";
+import { getUser,setChannel } from "@/utils/storage/";
 
 export default {
   name: "channel",
@@ -89,31 +89,32 @@ export default {
 
     // 编辑被点
     async doEdit() {
+
       // 判断当前状态是否为编辑状态，如果是，就保存数据
-      if (this.isEdit) {
-        // 判断是否有登录
-        // let user = getUser();
-        // 如果登录了才发请求
-        // if (user) {
-        if (this.$store.state.userInfo) {
+      if(this.isEdit){
+
+      if( this.$store.state.userInfo ){
           //保存数据
           // 先切割掉推荐
           // slice方法：切割数组，参数1是从哪个下标开始截取，参数2是截取到哪个下标为止，如果不传代表截取到最后
-          let channels = this.myList.slice(1).map((item, index) => {
-            return {
-              id: item.id,
-              // 因为0是固定的推荐，所以我们的顺序应该从1开始，1开始就是+1
-              seq: index + 1
-            };
-          });
+          let channels = this.myList.slice(1).map( (item,index) => {
+
+             return { 
+                id:item.id,
+                // 因为0是固定的推荐，所以我们的顺序应该从1开始，1开始就是+1
+                seq: index + 1
+              }
+
+          } )
 
           // 发请求
           let res = await changeChannel(channels);
-        } else {
-          //没登录就把当前我选择的频道保存到本地存储
-          // window.localStorage.setItem('channel',JSON.stringify(this.myList))
-          setChannel(this.myList);
-        }
+      }else{
+
+          //保存到本地存储
+          // window.localStorage.setItem('channel', JSON.stringify(this.myList ) )
+          setChannel( this.myList )
+      }
       }
 
       this.isEdit = !this.isEdit;

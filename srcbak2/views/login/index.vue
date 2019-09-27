@@ -47,8 +47,8 @@ export default {
       errorMsg1: "",
       errorMsg2: "",
       form: {
-        mobile: "",
-        code: ""
+        mobile: "13911111111",
+        code: "246810"
       }
     };
   },
@@ -85,9 +85,9 @@ export default {
             // 如果登录成功要保存token
             // window.localStorage.setItem('userInfo',JSON.stringify(res.data.data))
             // setUser(res.data.data);
-            // 因为我们既要保存到本地存储也要保存到vuex
-            this.$store.commit('setUserInfo',res.data.data)
 
+            this.$store.commit('setUserInfo',res.data.data)
+            
             // 再跳转页面
             this.$router.push('/home')
 

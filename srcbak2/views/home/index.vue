@@ -36,10 +36,8 @@
 import { getChannel } from "@/api/channel.js";
 import { getArticleByTime } from "@/api/article.js";
 import channel from "./channel.vue";
-// 如果不同的文件里有相同的要导入的名字
-// 解决办法是：起一个别名
-// 名字 as 别名
 import { getUser, getChannel as localChannel } from "@/utils/storage/";
+import { setUser, setChannel } from '../../utils/storage';
 
 export default {
   name: "home",
@@ -114,35 +112,61 @@ export default {
   },
 
   async created() {
-
-    // 如果登录了
-    // 或者本地也没值，都要进来发请求获取数据
     let local = localChannel();
-    // if (getUser() || !local ) {
-      // 现在用vuex判断有没有登录
-    if (this.$store.state.userInfo || !local ) {
 
+    if (this.$store.state.userInfo || !local) {
       // 获取用户自己频道
       let res = await getChannel();
+      
+
+      // 获取本地的频道
+      // 拿到本地的频道的所有id
+      // 先对本地存储的频道做一个过滤，把它去掉我自己有的，再加到我们自己的频道里
+      let list = local.filter(item => {
+
+        let flag = true;
+
+        res.data.data.channels.forEach(two => {
+          // 如果有相等的代表return false不保留
+          if (two.id == item.id) {
+            flag = false;
+            return; //相当于只是结束循环，类似于break的作用
+          }
+        });
+
+        return flag;
+      });
+
+      // 下面这个是自己写的循环
+      // let list = local.filter( item => {
+
+      //   for(let i = 0; i < res.data.data.channels.length; i++){
+
+      //     if(item.id == res.data.data.channels[i].id){
+
+      //       return false;
+      //     }
+      //   }
+      //   return true;
+
+      // } )
+
+      
+
+      res.data.data.channels.push( ...list );
+
       //   console.log(res);
       this.channelList = res.data.data.channels;
 
+      // 合并后频道再保存一次，方便下次我不登录直接打开也有你合并后的结果
+      setChannel(this.channelList)
+
     } else {
+      //读取本地的
+      // this.channelList = JSON.parse(window.localStorage.getItem('channel'))
+      this.channelList = local;
 
-      // 如果没登录，而且本地存储有值，才用本地存储的值
-      // this.channelList =  JSON.parse(localStorage.getItem('channel'))
-      this.channelList =  local;
-      // let local = localChannel();
-      // if (local) {
-
-      //   this.channelList = local;
-
-      // } else {
-      //   // 获取用户自己频道
-      //   let res = await getChannel();
-      //   //   console.log(res);
-      //   this.channelList = res.data.data.channels;
-      // }
+      // 如果没有登录，或者也没有本地存储也要去发请求
     }
   }
 };

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getUser } from '../storage/'
-import store from '@/store/'
+import store from '@/store/index.js'
 
 // 以后项目大的话，可能要发几十几百条接口的请求
 // 有的做登录，有的做数据请求，删除，等等各种数据
@@ -37,12 +37,9 @@ export const http = axios.create({
 // 添加请求拦截器
 http.interceptors.request.use(function (config) {
     
-    // if(getUser()){
+    if(store.state.userInfo){
 
-    let userInfo = store.state.userInfo;    
-    if(userInfo){
-
-        config.headers.Authorization = `Bearer ${userInfo.token}`
+        config.headers.Authorization = `Bearer ${store.state.userInfo.token}`
     }
 
     return config;
