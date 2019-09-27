@@ -38,7 +38,12 @@
 
     <van-row gutter="5">
       <van-col span="6" v-for="item in newList">
-        <van-button @click="addChannel(item)" color="#f4f5f6" size="large">{{item.name}}</van-button>
+        <van-button
+          :disabled="!isEdit"
+          @click="addChannel(item)"
+          color="#f4f5f6"
+          size="large"
+        >{{item.name}}</van-button>
       </van-col>
     </van-row>
   </van-popup>
@@ -67,22 +72,6 @@ export default {
   methods: {
     async doClose() {
       this.$emit("change-show", false);
-
-      // 先切割掉推荐
-      // slice方法：切割数组，参数1是从哪个下标开始截取，参数2是截取到哪个下标为止，如果不传代表截取到最后
-      let channels = this.myList.slice(1).map( (item,index) => {
-
-         return { 
-            id:item.id,
-            // 因为0是固定的推荐，所以我们的顺序应该从1开始，1开始就是+1
-            seq: index + 1
-          }
-          
-      } )
-    
-      // 发请求
-      let res = await changeChannel(channels);
-      console.log(res);
     },
     // 删除
     doDel(item) {
@@ -98,10 +87,33 @@ export default {
     },
 
     // 编辑被点
-    doEdit() {
+    async doEdit() {
+
+      // 判断当前状态是否为编辑状态，如果是，就保存数据
+      if(this.isEdit){
+
+          //保存数据
+          // 先切割掉推荐
+          // slice方法：切割数组，参数1是从哪个下标开始截取，参数2是截取到哪个下标为止，如果不传代表截取到最后
+          let channels = this.myList.slice(1).map( (item,index) => {
+
+             return { 
+                id:item.id,
+                // 因为0是固定的推荐，所以我们的顺序应该从1开始，1开始就是+1
+                seq: index + 1
+              }
+
+          } )
+
+          // 发请求
+          let res = await changeChannel(channels);
+      }
+
       this.isEdit = !this.isEdit;
 
       this.editText = this.isEdit ? "完成" : "编辑";
+
+      //判断是不是非编辑状态
     },
 
     // 添加频道
