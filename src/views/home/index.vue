@@ -20,14 +20,14 @@
 
     <!-- <channel :show="channelShow" @change-show="channelShow = $event"></channel> -->
     <!-- <channel v-model="channelShow" :myList="channelList" :active='tabActive' @change-active="tabActive = $event"></channel> -->
-    
+
     <!-- 
       如果有多个双向绑定，一个v-model不够用
       可以用 :属性.sync 来解决
       但是要用这种写法： 子给父传的事件名前面必须加 update: 事件名 并且事件名要跟父传子的属性一样 
       这样写了后，就可以用 :属性.sync做双向绑定
-     -->
-    <channel v-model="channelShow" :myList="channelList" :active.sync='tabActive'></channel>
+    -->
+    <channel v-model="channelShow" :myList="channelList" :active.sync="tabActive"></channel>
   </div>
 </template>
 
@@ -36,6 +36,10 @@
 import { getChannel } from "@/api/channel.js";
 import { getArticleByTime } from "@/api/article.js";
 import channel from "./channel.vue";
+// 如果不同的文件里有相同的要导入的名字
+// 解决办法是：起一个别名
+// 名字 as 别名
+import { getUser, getChannel as localChannel } from "@/utils/storage/";
 
 export default {
   name: "home",
@@ -110,10 +114,34 @@ export default {
   },
 
   async created() {
-    // 获取用户自己频道
-    let res = await getChannel();
-    //   console.log(res);
-    this.channelList = res.data.data.channels;
+
+    // 如果登录了
+    // 或者本地也没值，都要进来发请求获取数据
+    let local = localChannel();
+    if (getUser() || !local ) {
+
+      // 获取用户自己频道
+      let res = await getChannel();
+      //   console.log(res);
+      this.channelList = res.data.data.channels;
+
+    } else {
+
+      // 如果没登录，而且本地存储有值，才用本地存储的值
+      // this.channelList =  JSON.parse(localStorage.getItem('channel'))
+      this.channelList =  local;
+      // let local = localChannel();
+      // if (local) {
+
+      //   this.channelList = local;
+
+      // } else {
+      //   // 获取用户自己频道
+      //   let res = await getChannel();
+      //   //   console.log(res);
+      //   this.channelList = res.data.data.channels;
+      // }
+    }
   }
 };
 </script>

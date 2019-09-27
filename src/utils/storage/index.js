@@ -20,3 +20,16 @@ export const delUser = () => {
    
     window.localStorage.removeItem(USER_KEY)
 }
+
+
+// 获取频道信息
+export const getChannel = () =>{
+
+    return JSON.parse(localStorage.getItem('channel'))
+}
+
+// 保存频道信息
+export const setChannel = (list) => {
+
+    window.localStorage.setItem('channel',JSON.stringify(list))
+}
