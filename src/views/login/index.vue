@@ -47,8 +47,8 @@ export default {
       errorMsg1: "",
       errorMsg2: "",
       form: {
-        mobile: "",
-        code: ""
+        mobile: "13911111111",
+        code: "246810"
       }
     };
   },

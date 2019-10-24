@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- 
+        所有的基本类型都是值类型
+            传递的值
+        所有的复杂类型都是引用类型
+            传递的地址
+     -->
+
+     <script>
+        //  var n1 = 10;
+        //  var n2 = n1;
+        //  n2 = 3000;
+        //  console.log(n1,n2);
+
+
+        //  var obj1 = {name:"jack"}
+        //  var obj2 = obj1;
+        //  obj2.name = "rose";
+        //  console.log(obj1,obj2);
+
+
+        //  var obj1 = {name:"jack"}
+        //  var obj2 = obj1.name;
+
+        //  obj2 = "rose";
+        //  console.log(obj1,obj2);
+         
+
+        // function f1(s){
+        //     //形参也相当于是局部变量，所以也要开空间
+        //     s = 3000;
+        // }
+
+        // var n1 = 10;
+        // f1(n1);
+        // console.log(n1);//10
+
+
+        // function f2(s){
+
+        //     s.age = 999;
+        // }
+
+        // var obj = {name:"kack", age:16}
+
+        // f2(obj)
+        // console.log(obj);
+
+
+        // function f3(s){
+
+        //     s = { name:"rose",age:999 }
+        // }
+
+        // var obj = {name:"jack", age:16}
+        // f3(obj)
+        // console.log(obj); //jack 16
+
+
+        // function f4(s){
+
+        //     s = 999; //只是改s自己空间，而不是它指向的空间
+        // }
+        // var obj = { name:"jack", age:16 };
+        // f4(obj);
+        // console.log(obj);//jack 16 
+
+
+        // function f5(s){
+
+        //     s = 999;
+        // }
+        // var obj = { name:"jack", age:16 }
+        // f5(obj.age)
+        // console.log(obj.age); //16
+        
+
+        function forEach(str){
+
+            str = str + "///"
+        }
+
+        var arr = [ 'abc','cba','nba'];
+        forEach(arr[0])
+        forEach(arr[1])
+        forEach(arr[2])
+
+        console.log(arr);//都是打印不加///的
+        
+         
+     </script>
+</head>
+<body>
+    
+</body>
+</html>

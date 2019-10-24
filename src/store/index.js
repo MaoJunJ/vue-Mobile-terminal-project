@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { setUser } from '../utils/storage/'
+import { setUser, getUser } from '../utils/storage/'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userInfo: null
+    userInfo: getUser()
   },
 
   // 方法，专门用来给state赋值

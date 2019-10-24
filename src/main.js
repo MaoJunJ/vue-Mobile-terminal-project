@@ -7,6 +7,10 @@ import Vant from 'vant';
 import 'vant/lib/index.css';
 Vue.use(Vant);
 
+// 导入自己写的登录插件
+import plugin from './utils/loginPlugin/'
+Vue.use(plugin)
+
 import 'amfe-flexible'
 
 import './styles/base.less'
@@ -21,6 +25,7 @@ dayjs.extend(relativeTime)
 import 'dayjs/locale/zh-cn'
 // 使用中文包
 dayjs.locale('zh-cn')
+
 
 
 // 注册全局过滤器

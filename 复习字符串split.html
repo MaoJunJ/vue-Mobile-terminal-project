@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- 
+        数组：splice 删除元素
+        字符串：split 根据内容切割成数组
+    -->
+    <script>
+        var str = "刘备|关羽|张飞|赵帅|黄忠|赵帅"
+
+        // var res = str.split('|')
+        // console.log(res);
+
+        // 现在我搜索关键字叫赵帅
+        // str = str.replace(/赵帅/g,'<span color="red">赵帅</span>')
+        // str = str.replace('赵帅','<span color="red">赵帅</span>')
+        // console.log(str);
+
+        // 我在黑马程序员学习   /程序员/g, <span>
+        // 程序员老了后能干嘛？
+        // 程序员如何治疗脱发
+        var key = "赵帅"
+        var reg = new RegExp(key,'g')
+        str = str.replace(reg,'<span color="red">赵帅</span>')
+        console.log(str);
+        
+        
+        var arr = ['abc','cba','nba'];
+
+        function forEach(item){
+
+            item = item + "ddddd"
+        }
+
+        forEach(arr[0])
+        forEach(arr[1])
+        forEach(arr[2])
+
+        console.log(arr);
+        
+        
+        
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

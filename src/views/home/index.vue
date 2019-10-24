@@ -7,12 +7,15 @@
         <van-pull-refresh v-model="pullLoading" @refresh="onRefresh">
           <!-- 列表 -->
           <van-list v-model="loading" :finished="finished" finished-text="我是有底线的！" @load="onLoad">
-            <van-cell v-for="(item,index) in articlList" :key="index" :title="item.title">
+            <van-cell v-for="(item,index) in articlList" :key="index">
+              <template slot="title">
+                <div @click="$router.push(`/detail/${item.art_id}`)">{{item.title}}</div>
+              </template>
               <template slot="label">
                 <!-- 放图片的宫格 -->
                 <van-grid :border="false" :column-num="3" v-if="item.cover.type > 0">
                   <van-grid-item v-for="image in item.cover.images">
-                    <van-image :src="image" />
+                    <van-image :src="image" @click="$router.push(`/detail/${item.art_id}`)" />
                   </van-grid-item>
                 </van-grid>
 
@@ -21,7 +24,7 @@
                   <span>评论:{{ item.comm_count }}</span>
                   <span>{{ item.pubdate | relvTime }}</span>
 
-                  <van-icon style="float:right;" name="close" />
+                  <van-icon style="float:right;" name="close" @click="showReport(item)" />
                 </div>
               </template>
             </van-cell>
@@ -45,6 +48,9 @@
       这样写了后，就可以用 :属性.sync做双向绑定
     -->
     <channel v-model="channelShow" :myList="channelList" :active.sync="tabActive"></channel>
+
+    <!-- <report :dialogShow="dialogShow" @show-dialog="dialogShow = $event"></report> -->
+    <report v-model="dialogShow" :art_id="art_id" :artList="articlList" :aut_id="aut_id"></report>
   </div>
 </template>
 
@@ -52,20 +58,28 @@
 // 导入请求工具
 import { getChannel } from "@/api/channel.js";
 import { getArticleByTime } from "@/api/article.js";
-import channel from "./channel.vue";
 // 如果不同的文件里有相同的要导入的名字
 // 解决办法是：起一个别名
 // 名字 as 别名
 import { getUser, getChannel as localChannel } from "@/utils/storage/";
 import { setUser, setChannel } from "../../utils/storage";
 
+// 以下导入组件
+import channel from "./channel.vue";
+import report from "./report.vue";
+
 export default {
   name: "home",
   components: {
-    channel
+    channel,
+    report
   },
   data() {
     return {
+      aut_id: "",
+      // 传递给子组件的当前操作文章id
+      art_id: "",
+      dialogShow: false,
       channelShow: false,
       // 设置下拉的加载状态，默认为false
       pullLoading: false,
@@ -80,6 +94,13 @@ export default {
   },
 
   methods: {
+    // 点击x调用的方法
+    showReport(item) {
+      this.art_id = item.art_id;
+      this.aut_id = item.aut_id;
+      this.dialogShow = true;
+    },
+
     async onTabChange(name, title) {
       // 要去加载你这一个频道下面的新闻，然后渲染到列表
       let res = await this.loadArticle();
